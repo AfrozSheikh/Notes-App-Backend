@@ -82,13 +82,13 @@
 
 // export default middleware;
 
+
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 const middleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,
@@ -96,11 +96,13 @@ const middleware = async (req, res, next) => {
       });
     }
 
-    // Extract the token
+    // Extract and verify the token
     const token = authHeader.split(" ")[1];
+    console.log("Authorization Header:", authHeader); // Log for debugging
+    console.log("Extracted Token:", token); // Log for debugging
 
-    const decoded = jwt.verify(token, "secretkey123456"); // Verify the token
-    const user = await User.findById(decoded.id); // Retrieve user from database
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "secretkey123456"); // Verify with environment variable or default
+    const user = await User.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({
@@ -109,13 +111,12 @@ const middleware = async (req, res, next) => {
       });
     }
 
-    req.user = { name: user.name, id: user._id }; // Add user info to the request
-    next(); // Move to the next middleware
+    req.user = { name: user.name, id: user._id };
+    next();
   } catch (error) {
-    console.log("Token verification error:", error.message); // Log the error message
+    console.log("Token verification error:", error.message); // Log error message
     res.status(401).json({ success: false, message: "Invalid or malformed token" });
   }
 };
 
 export default middleware;
-
