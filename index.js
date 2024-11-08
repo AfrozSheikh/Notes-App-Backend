@@ -9,6 +9,10 @@ app.use(express.json())
 app.use(cors({origin:'https://notes-app-frontend-khaki.vercel.app/'}))
 app.use('/api/auth' ,authRouter)
 app.use('/api/note' ,noteRouter)
+app.get('/', (req, res) => {
+    res.send("Backend is running!");
+});
+
 
 app.listen(5000,()=>{
     dbConnect();
