@@ -6,7 +6,10 @@ import authRouter from './routes/auth.js'; // Correct way
 
 import dbConnect from './db/db.js';
 app.use(express.json()) 
-app.use(cors())
+app.use(cors({
+    origin:"https://e-note-k.netlify.app",
+    credentials:true
+}))
 app.use('/api/auth' ,authRouter)
 app.use('/api/note' ,noteRouter)
 
